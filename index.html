@@ -775,7 +775,7 @@ searchInput.addEventListener('input', () => {
   const q = searchInput.value.trim();
   if (!q) userPicked = false;               // reset to auto mode when cleared
   if (!userPicked) {
-    const next = (looksLikeUrl(q) || findChordMatch(q) || q.length < 3) ? GO_MODE : 0;
+    const next = (looksLikeUrl(q) || findChordMatch(q)) ? GO_MODE : 0;
     if (next !== activeEngine) { activeEngine = next; renderEngines(); }
   }
   updateUI();
