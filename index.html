@@ -574,7 +574,7 @@ let engines = JSON.parse(localStorage.getItem('engines'))
 let nextSectionId = parseInt(localStorage.getItem('next_section_id') || '3');
 
 let autoFocusSearch = localStorage.getItem('autofocus_search') === null
-  ? false
+  ? true
   : localStorage.getItem('autofocus_search') === 'true';
 
 function loadSections() {
