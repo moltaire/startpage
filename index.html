@@ -329,6 +329,15 @@
     }
     .modal-section-btn.active { border-color: var(--accent); color: var(--text); }
 
+    .chord-hint {
+      color: var(--dim);
+      font-size: 0.85rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      pointer-events: none;
+      transition: opacity 0.1s;
+    }
+
     .gh-link {
       position: fixed;
       bottom: 14px;
@@ -359,6 +368,7 @@
       </svg>
     </span>
     <input id="search-input" autocomplete="off" placeholder="Search…" />
+    <span id="chord-hint" class="chord-hint"></span>
   </div>
 
   <div class="engine-row" id="engine-row"></div>
@@ -490,10 +500,14 @@ const GLOBE_SVG  = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 const SEARCH_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
 
 function updateUI() {
-  const q     = searchInput.value.trim();
-  const isNav = activeEngine === GO_MODE || looksLikeUrl(q);
+  const q      = searchInput.value.trim();
+  const isNav  = activeEngine === GO_MODE || looksLikeUrl(q);
   document.querySelector('.search-icon').innerHTML = isNav ? GLOBE_SVG : SEARCH_SVG;
   searchInput.placeholder = isNav ? 'Go to…' : 'Search…';
+
+  const hintEl = document.getElementById('chord-hint');
+  const match  = (activeEngine === GO_MODE && q) ? findChordMatch(q) : null;
+  hintEl.textContent = match ? '→ ' + match.name : '';
 }
 
 /* ── default data ── */
@@ -707,6 +721,10 @@ searchInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     const q = searchInput.value.trim();
     if (!q) return;
+    if (activeEngine === GO_MODE) {
+      const match = findChordMatch(q);
+      if (match) { window.location.href = match.url; return; }
+    }
     if (activeEngine === GO_MODE || looksLikeUrl(q)) {
       let url = q;
       if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
@@ -728,7 +746,7 @@ searchInput.addEventListener('input', () => {
   const q = searchInput.value.trim();
   if (!q) userPicked = false;               // reset to auto mode when cleared
   if (!userPicked) {
-    const next = looksLikeUrl(q) ? GO_MODE : 0;
+    const next = (looksLikeUrl(q) || findChordMatch(q) || q.length < 3) ? GO_MODE : 0;
     if (next !== activeEngine) { activeEngine = next; renderEngines(); }
   }
   updateUI();
@@ -1095,6 +1113,11 @@ const VIRTUAL  = [
   { chord: ['a','s'], action: () => openModal({ mode: 'section',  item: {}, section: null,            index: -1 }) },
 ];
 const allBk = () => sections.flatMap(s => s.bookmarks);
+
+function findChordMatch(q) {
+  const lower = q.toLowerCase();
+  return allBk().find(b => b.chord && b.chord.join('') === lower) || null;
+}
 let   chordBuf = [];
 const toast    = document.getElementById('chord-toast');
 let   chordTimer;
