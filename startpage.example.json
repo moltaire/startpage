@@ -1,0 +1,131 @@
+{
+  "engines": [
+    {
+      "label": "Google",
+      "url": "https://www.google.com/search?q=",
+      "icon": "https://icons.duckduckgo.com/ip3/www.google.com.ico"
+    },
+    {
+      "label": "DuckDuckGo",
+      "url": "https://duckduckgo.com/?q=",
+      "icon": "https://icons.duckduckgo.com/ip3/duckduckgo.com.ico"
+    },
+    {
+      "label": "Perplexity",
+      "url": "https://www.perplexity.ai/search?q=",
+      "icon": "https://icons.duckduckgo.com/ip3/www.perplexity.ai.ico"
+    }
+  ],
+  "sections": [
+    {
+      "id": 1,
+      "name": "Daily",
+      "bookmarks": [
+        {
+          "name": "Gmail",
+          "url": "https://mail.google.com",
+          "icon": null,
+          "chord": ["g", "m"],
+          "keys": "gm"
+        },
+        {
+          "name": "Calendar",
+          "url": "https://calendar.google.com",
+          "icon": null,
+          "chord": ["g", "c"],
+          "keys": "gc"
+        },
+        {
+          "name": "GitHub",
+          "url": "https://github.com",
+          "icon": null,
+          "chord": ["g", "h"],
+          "keys": "gh"
+        },
+        {
+          "name": "Reddit",
+          "url": "https://www.reddit.com",
+          "icon": null,
+          "chord": ["r", "e"],
+          "keys": "re"
+        },
+        {
+          "name": "YouTube",
+          "url": "https://youtube.com",
+          "icon": null,
+          "chord": ["y", "t"],
+          "keys": "yt"
+        },
+        {
+          "name": "Hacker News",
+          "url": "https://news.ycombinator.com",
+          "icon": null,
+          "chord": ["h", "n"],
+          "keys": "hn"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Work",
+      "bookmarks": [
+        {
+          "name": "Notion",
+          "url": "https://www.notion.so",
+          "icon": null,
+          "chord": ["w", "n"],
+          "keys": "wn"
+        },
+        {
+          "name": "Linear",
+          "url": "https://linear.app",
+          "icon": null,
+          "chord": ["w", "l"],
+          "keys": "wl"
+        },
+        {
+          "name": "Figma",
+          "url": "https://www.figma.com",
+          "icon": null,
+          "chord": ["w", "f"],
+          "keys": "wf"
+        },
+        {
+          "name": "Slack",
+          "url": "https://app.slack.com",
+          "icon": null,
+          "chord": ["w", "s"],
+          "keys": "ws"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Local",
+      "bookmarks": [
+        {
+          "name": "Router",
+          "url": "http://192.168.1.1",
+          "icon": null,
+          "chord": ["l", "r"],
+          "keys": "lr"
+        },
+        {
+          "name": "Home Assistant",
+          "url": "http://homeassistant.local:8123",
+          "icon": "https://icons.duckduckgo.com/ip3/home-assistant.io.ico",
+          "chord": ["l", "h"],
+          "keys": "lh"
+        },
+        {
+          "name": "Jellyfin",
+          "url": "http://jellyfin.local:8096",
+          "icon": "https://icons.duckduckgo.com/ip3/jellyfin.org.ico",
+          "chord": ["l", "j"],
+          "keys": "lj"
+        }
+      ]
+    }
+  ],
+  "nextSectionId": 4
+}
