@@ -330,6 +330,9 @@
     .modal-section-btn.active { border-color: var(--accent); color: var(--text); }
 
     .chord-hint {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       color: var(--dim);
       font-size: 0.85rem;
       white-space: nowrap;
@@ -337,6 +340,10 @@
       pointer-events: none;
       transition: opacity 0.1s;
     }
+    .chord-hint-arrow { line-height: 1; transform: translateY(-1px); }
+    .chord-hint-icon  { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+
+    .bookmark.chord-active { background: #23222a; }
 
     .gh-link {
       position: fixed;
@@ -507,7 +514,29 @@ function updateUI() {
 
   const hintEl = document.getElementById('chord-hint');
   const match  = (activeEngine === GO_MODE && q) ? findChordMatch(q) : null;
-  hintEl.textContent = match ? '→ ' + match.name : '';
+
+  document.querySelectorAll('.bookmark.chord-active').forEach(el => el.classList.remove('chord-active'));
+
+  if (match) {
+    const img = document.createElement('img');
+    img.className = 'chord-hint-icon';
+    const resolved = resolveIcon(match);
+    if (resolved) { img.src = resolved; img.onerror = () => setFaviconWithFallback(img, match.url, match.name); }
+    else setFaviconWithFallback(img, match.url, match.name);
+
+    hintEl.innerHTML = '';
+    const arrow = document.createElement('span');
+    arrow.className = 'chord-hint-arrow';
+    arrow.textContent = '›';
+    hintEl.appendChild(arrow);
+    hintEl.appendChild(img);
+    hintEl.appendChild(document.createTextNode(match.name));
+
+    const bkEl = document.querySelector(`.bookmark[data-chord="${match.chord.join('')}"]`);
+    if (bkEl) bkEl.classList.add('chord-active');
+  } else {
+    hintEl.innerHTML = '';
+  }
 }
 
 /* ── default data ── */
@@ -822,6 +851,7 @@ function renderGrid(list, grid, sectionId) {
   list.forEach((b, i) => {
     const el = document.createElement('div');
     el.className = 'bookmark';
+    if (b.chord) el.dataset.chord = b.chord.join('');
 
     el.innerHTML = `
       <div class="bk-icon"><img /></div>
