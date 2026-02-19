@@ -568,21 +568,25 @@ const DEFAULT_LOCAL = [
 ];
 
 /* ── state ── */
-let engines = JSON.parse(localStorage.getItem('engines'))
+function lsGet(key) { try { return localStorage.getItem(key); } catch { return null; } }
+function lsSet(key, val) { try { localStorage.setItem(key, val); } catch {} }
+function lsClear() { try { localStorage.clear(); } catch {} }
+
+let engines = JSON.parse(lsGet('engines'))
   || JSON.parse(JSON.stringify(DEFAULT_ENGINES));
 
-let nextSectionId = parseInt(localStorage.getItem('next_section_id') || '3');
+let nextSectionId = parseInt(lsGet('next_section_id') || '3');
 
-let autoFocusSearch = localStorage.getItem('autofocus_search') === null
+let autoFocusSearch = lsGet('autofocus_search') === null
   ? true
-  : localStorage.getItem('autofocus_search') === 'true';
+  : lsGet('autofocus_search') === 'true';
 
 function loadSections() {
-  const saved = localStorage.getItem('sections');
+  const saved = lsGet('sections');
   if (saved) return JSON.parse(saved);
   // Migrate from old bk_web / bk_local keys (one-time)
-  const web   = JSON.parse(localStorage.getItem('bk_web'))   || JSON.parse(JSON.stringify(DEFAULT_WEB));
-  const local = JSON.parse(localStorage.getItem('bk_local')) || JSON.parse(JSON.stringify(DEFAULT_LOCAL));
+  const web   = JSON.parse(lsGet('bk_web'))   || JSON.parse(JSON.stringify(DEFAULT_WEB));
+  const local = JSON.parse(lsGet('bk_local')) || JSON.parse(JSON.stringify(DEFAULT_LOCAL));
   return [
     { id: 1, name: 'Web',   bookmarks: web   },
     { id: 2, name: 'Local', bookmarks: local },
@@ -595,10 +599,10 @@ let activeEngine = GO_MODE;
 let userPicked = false;
 
 function save() {
-  localStorage.setItem('engines',          JSON.stringify(engines));
-  localStorage.setItem('sections',         JSON.stringify(sections));
-  localStorage.setItem('next_section_id',  String(nextSectionId));
-  localStorage.setItem('autofocus_search', String(autoFocusSearch));
+  lsSet('engines',          JSON.stringify(engines));
+  lsSet('sections',         JSON.stringify(sections));
+  lsSet('next_section_id',  String(nextSectionId));
+  lsSet('autofocus_search', String(autoFocusSearch));
 }
 
 /* ── autofocus toggle ── */
@@ -647,10 +651,10 @@ document.getElementById('import-btn').addEventListener('click', () => {
     reader.onload = e => {
       try {
         const data = JSON.parse(e.target.result);
-        if (data.engines)                    localStorage.setItem('engines',          JSON.stringify(data.engines));
-        if (data.sections)                   localStorage.setItem('sections',         JSON.stringify(data.sections));
-        if (data.nextSectionId)              localStorage.setItem('next_section_id',  String(data.nextSectionId));
-        if (data.autoFocusSearch !== undefined) localStorage.setItem('autofocus_search', String(data.autoFocusSearch));
+        if (data.engines)                    lsSet('engines',          JSON.stringify(data.engines));
+        if (data.sections)                   lsSet('sections',         JSON.stringify(data.sections));
+        if (data.nextSectionId)              lsSet('next_section_id',  String(data.nextSectionId));
+        if (data.autoFocusSearch !== undefined) lsSet('autofocus_search', String(data.autoFocusSearch));
         location.reload();
       } catch { alert('Could not read file — invalid JSON.'); }
     };
@@ -662,7 +666,7 @@ document.getElementById('import-btn').addEventListener('click', () => {
 /* ── reset ── */
 document.getElementById('reset-btn').addEventListener('click', () => {
   if (!confirm('Reset to factory defaults? This clears all your bookmarks and engines.')) return;
-  localStorage.clear();
+  lsClear();
   location.reload();
 });
 
@@ -684,7 +688,12 @@ function renderEngines() {
   engines.forEach((e, i) => {
     const pill = document.createElement('div');
     pill.className = 'engine-pill' + (i === activeEngine ? ' active' : '');
-    pill.innerHTML = `<img src="${e.icon}" />${e.label}`;
+    const eImg = document.createElement('img');
+    const eResolved = resolveIcon(e);
+    if (eResolved) { eImg.src = eResolved; eImg.onerror = () => setFaviconWithFallback(eImg, e.url, e.label); }
+    else setFaviconWithFallback(eImg, e.url, e.label);
+    pill.appendChild(eImg);
+    pill.appendChild(document.createTextNode(e.label));
 
     pill.addEventListener('click', () => { activeEngine = i; userPicked = true; renderEngines(); updateUI(); });
 
