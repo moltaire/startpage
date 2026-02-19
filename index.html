@@ -27,7 +27,7 @@
       flex-direction: column;
       align-items: center;
       padding: 40px;
-      margin-top: 100px;
+      margin-top: clamp(12px, 6vh, 100px);
     }
 
     .page-wrap { width: 80%; max-width: 950px; margin: 0 auto; }
@@ -328,6 +328,18 @@
       cursor: pointer;
     }
     .modal-section-btn.active { border-color: var(--accent); color: var(--text); }
+
+    .gh-link {
+      position: fixed;
+      bottom: 14px;
+      right: 18px;
+      font-size: 0.68rem;
+      color: var(--dim);
+      text-decoration: none;
+      opacity: 0.45;
+      transition: opacity 0.15s;
+    }
+    .gh-link:hover { opacity: 1; }
   </style>
 </head>
 
@@ -359,6 +371,7 @@
     <kbd>ae</kbd> engine &nbsp;·&nbsp;
     <kbd>as</kbd> section &nbsp;·&nbsp;
     right-click to edit &nbsp;·&nbsp;
+    <button class="reset-btn" id="autofocus-btn"></button> &nbsp;·&nbsp;
     <button class="reset-btn" id="export-btn">export</button> &nbsp;·&nbsp;
     <button class="reset-btn" id="import-btn">import</button> &nbsp;·&nbsp;
     <button class="reset-btn" id="reset-btn">reset</button>
@@ -367,6 +380,8 @@
 </div>
 
 <div class="chord-toast" id="chord-toast"></div>
+
+<a class="gh-link" href="https://github.com/moltaire/startpage" target="_blank" rel="noopener">github</a>
 
 <div class="ctx-menu" id="ctx-menu">
   <div class="ctx-item" id="ctx-edit">Edit</div>
@@ -515,6 +530,10 @@ let engines = JSON.parse(localStorage.getItem('engines'))
 
 let nextSectionId = parseInt(localStorage.getItem('next_section_id') || '3');
 
+let autoFocusSearch = localStorage.getItem('autofocus_search') === null
+  ? false
+  : localStorage.getItem('autofocus_search') === 'true';
+
 function loadSections() {
   const saved = localStorage.getItem('sections');
   if (saved) return JSON.parse(saved);
@@ -533,10 +552,26 @@ let activeEngine = GO_MODE;
 let userPicked = false;
 
 function save() {
-  localStorage.setItem('engines',         JSON.stringify(engines));
-  localStorage.setItem('sections',        JSON.stringify(sections));
-  localStorage.setItem('next_section_id', String(nextSectionId));
+  localStorage.setItem('engines',          JSON.stringify(engines));
+  localStorage.setItem('sections',         JSON.stringify(sections));
+  localStorage.setItem('next_section_id',  String(nextSectionId));
+  localStorage.setItem('autofocus_search', String(autoFocusSearch));
 }
+
+/* ── autofocus toggle ── */
+const autofocusBtn = document.getElementById('autofocus-btn');
+
+function renderAutofocusBtn() {
+  autofocusBtn.textContent = 'autofocus: ' + (autoFocusSearch ? 'on' : 'off');
+}
+
+autofocusBtn.addEventListener('click', () => {
+  autoFocusSearch = !autoFocusSearch;
+  renderAutofocusBtn();
+  save();
+});
+
+renderAutofocusBtn();
 
 function listBySection(id) { return sections.find(s => s.id === id)?.bookmarks || []; }
 
@@ -548,7 +583,7 @@ function parseChord(str) {
 
 /* ── export ── */
 document.getElementById('export-btn').addEventListener('click', () => {
-  const data = { engines, sections, nextSectionId };
+  const data = { engines, sections, nextSectionId, autoFocusSearch };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -569,9 +604,10 @@ document.getElementById('import-btn').addEventListener('click', () => {
     reader.onload = e => {
       try {
         const data = JSON.parse(e.target.result);
-        if (data.engines)        localStorage.setItem('engines',         JSON.stringify(data.engines));
-        if (data.sections)       localStorage.setItem('sections',        JSON.stringify(data.sections));
-        if (data.nextSectionId)  localStorage.setItem('next_section_id', String(data.nextSectionId));
+        if (data.engines)                    localStorage.setItem('engines',          JSON.stringify(data.engines));
+        if (data.sections)                   localStorage.setItem('sections',         JSON.stringify(data.sections));
+        if (data.nextSectionId)              localStorage.setItem('next_section_id',  String(data.nextSectionId));
+        if (data.autoFocusSearch !== undefined) localStorage.setItem('autofocus_search', String(data.autoFocusSearch));
         location.reload();
       } catch { alert('Could not read file — invalid JSON.'); }
     };
@@ -650,6 +686,7 @@ const searchInput = document.getElementById('search-input');
 
 renderEngines();
 updateUI();
+if (autoFocusSearch) searchInput.focus();
 
 searchInput.addEventListener('keydown', e => {
   if (e.key === 'Tab') {

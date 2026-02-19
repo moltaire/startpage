@@ -127,5 +127,6 @@
       ]
     }
   ],
-  "nextSectionId": 4
+  "nextSectionId": 4,
+  "autoFocusSearch": false
 }
