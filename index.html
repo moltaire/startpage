@@ -113,10 +113,25 @@
       color: var(--dim);
       cursor: grab;
       user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
     .section-label:hover { color: var(--text); }
     .section-label.is-dragging { opacity: 0.35; }
     .section-label.drag-over   { color: var(--text); outline: 1px dashed #44435a; border-radius: 4px; padding: 1px 4px; }
+
+    .section-collapse-arrow {
+      display: inline-block;
+      font-size: 1rem;
+      line-height: 1;
+      transition: transform 0.18s, opacity 0.18s;
+      transform: rotate(0deg);
+      flex-shrink: 0;
+      opacity: 0.3;
+    }
+    .section-collapse-arrow.expanded { transform: rotate(90deg); opacity: 0.35; }
+    .section-header.is-collapsed .section-label { opacity: 0.2; }
 
     .bookmark-grid {
       display: flex;
@@ -594,15 +609,20 @@ function loadSections() {
 }
 let sections = loadSections();
 
+let collapsedSections = (() => {
+  try { return JSON.parse(lsGet('collapsed_sections')) || {}; } catch { return {}; }
+})();
+
 const GO_MODE = -1;
 let activeEngine = GO_MODE;
 let userPicked = false;
 
 function save() {
-  lsSet('engines',          JSON.stringify(engines));
-  lsSet('sections',         JSON.stringify(sections));
-  lsSet('next_section_id',  String(nextSectionId));
-  lsSet('autofocus_search', String(autoFocusSearch));
+  lsSet('engines',            JSON.stringify(engines));
+  lsSet('sections',           JSON.stringify(sections));
+  lsSet('next_section_id',    String(nextSectionId));
+  lsSet('autofocus_search',   String(autoFocusSearch));
+  lsSet('collapsed_sections', JSON.stringify(collapsedSections));
 }
 
 /* ── autofocus toggle ── */
@@ -938,13 +958,27 @@ function renderAll() {
   container.innerHTML = '';
 
   sections.forEach((sec, si) => {
+    const isCollapsed = !!collapsedSections[sec.id];
+
     /* ── section header ── */
     const header = document.createElement('div');
-    header.className = 'section-header';
+    header.className = 'section-header' + (isCollapsed ? ' is-collapsed' : '');
 
     const label = document.createElement('span');
     label.className = 'section-label';
-    label.textContent = sec.name;
+
+    const collapseArrow = document.createElement('span');
+    collapseArrow.className = 'section-collapse-arrow' + (isCollapsed ? '' : ' expanded');
+    collapseArrow.textContent = '›';
+    label.appendChild(collapseArrow);
+    label.appendChild(document.createTextNode(sec.name));
+
+    label.addEventListener('dblclick', ev => {
+      ev.stopPropagation();
+      if (collapsedSections[sec.id]) delete collapsedSections[sec.id];
+      else collapsedSections[sec.id] = true;
+      save(); renderAll();
+    });
 
     label.addEventListener('contextmenu', ev => {
       ev.preventDefault();
@@ -986,6 +1020,7 @@ function renderAll() {
     /* ── bookmark grid ── */
     const grid = document.createElement('div');
     grid.className = 'bookmark-grid';
+    if (isCollapsed) grid.style.display = 'none';
 
     /* cross-section drop target */
     grid.addEventListener('dragover', ev => {
