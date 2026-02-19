@@ -16,7 +16,8 @@ Vibe coded with [Claude](https://claude.ai). Inspired by [hel1mo/startpage](http
 - **draggable everything** — bookmarks, engines, and sections reorder by drag
 - **right-click to edit or remove** — bookmarks, engines, and section labels
 - **favicons** — DuckDuckGo service with deterministic animal emoji fallback (no broken icons)
-- **export / import** — full state as JSON; edit offline and reimport to apply changes
+- **autofocus toggle** — footer button to control whether the search bar focuses on load (chord-friendly default: off)
+- **export / import** — full state as JSON, including autofocus preference; edit offline and reimport to apply changes
 - **localStorage persistence** — all state survives reloads
 
 ---
