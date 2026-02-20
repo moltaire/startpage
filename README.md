@@ -4,7 +4,7 @@ Browser startpage, for my personal use. Single self-contained HTML file.
 
 Vibe coded with [Claude](https://claude.ai). Inspired by [hel1mo/startpage](https://hel1mo.github.io/startpage).
 
-![screenshot](startpage.png)
+![screenshot](screenshot.png)
 
 ---
 
