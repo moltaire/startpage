@@ -4,7 +4,7 @@
 
 Browser startpage for my personal use. Vibe coded with [Claude](https://claude.ai). Inspired by [hel1mo/startpage](https://hel1mo.github.io/startpage).  
 
-<img src="screenshot.png" alt="Startpage Screenshot" width="60%" height="auto">
+<img src="screenshot.png" alt="Startpage Screenshot" width="75%" height="auto">
 
 ---
 
