@@ -1,10 +1,10 @@
 # startpage
 
-Browser startpage, for my personal use. Single self-contained HTML file.
+[![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?logo=github)](https://moltaire.github.io/startpage/)
 
-Vibe coded with [Claude](https://claude.ai). Inspired by [hel1mo/startpage](https://hel1mo.github.io/startpage).
+Browser startpage for my personal use. Vibe coded with [Claude](https://claude.ai). Inspired by [hel1mo/startpage](https://hel1mo.github.io/startpage).  
 
-![screenshot](screenshot.png)
+<img src="screenshot.png" alt="Startpage Screenshot" width="60%" height="auto">
 
 ---
 
@@ -36,4 +36,4 @@ Everything is editable in-browser: right-click any bookmark, engine, or section 
 | `ae` | add engine |
 | `as` | add section |
 
-To edit in bulk or back up your setup, use **export** to download a `startpage.json`, edit it, then **import** to reload. **Reset** clears everything back to the hardcoded defaults.
+To edit in bulk or back up, use **export** to download a `startpage.json`, edit it, then **import** to reload. **Reset** clears everything back to the hardcoded defaults.
