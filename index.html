@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"></noscript>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>New Tab</title>
@@ -592,9 +595,8 @@ let engines = JSON.parse(lsGet('engines'))
 
 let nextSectionId = parseInt(lsGet('next_section_id') || '3');
 
-let autoFocusSearch = lsGet('autofocus_search') === null
-  ? true
-  : lsGet('autofocus_search') === 'true';
+const _afs = lsGet('autofocus_search');
+let autoFocusSearch = _afs === null ? true : _afs === 'true';
 
 function loadSections() {
   const saved = lsGet('sections');
@@ -756,8 +758,6 @@ function renderEngines() {
 /* ── search ── */
 const searchInput = document.getElementById('search-input');
 
-renderEngines();
-updateUI();
 if (autoFocusSearch) searchInput.focus();
 
 searchInput.addEventListener('keydown', e => {
@@ -1047,7 +1047,11 @@ function renderAll() {
   });
 }
 
-renderAll();
+requestAnimationFrame(() => {
+  renderEngines();
+  updateUI();
+  renderAll();
+});
 
 /* ── modal (bookmarks + engines, create + edit) ── */
 let modalState = null;
