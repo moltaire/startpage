@@ -402,9 +402,9 @@
 
   <div class="instructions">
     <kbd>Tab</kbd> cycle engine &nbsp;·&nbsp;
-    <kbd>ab</kbd> bookmark &nbsp;·&nbsp;
-    <kbd>ae</kbd> engine &nbsp;·&nbsp;
-    <kbd>as</kbd> section &nbsp;·&nbsp;
+    <button class="reset-btn" id="hint-ab"><kbd>ab</kbd> bookmark</button> &nbsp;·&nbsp;
+    <button class="reset-btn" id="hint-ae"><kbd>ae</kbd> engine</button> &nbsp;·&nbsp;
+    <button class="reset-btn" id="hint-as"><kbd>as</kbd> section</button> &nbsp;·&nbsp;
     right-click to edit &nbsp;·&nbsp;
     <button class="reset-btn" id="autofocus-btn"></button> &nbsp;·&nbsp;
     <button class="reset-btn" id="export-btn">export</button> &nbsp;·&nbsp;
@@ -1182,6 +1182,27 @@ document.getElementById('edit-modal').addEventListener('keydown', ev => {
     ev.preventDefault();
     document.getElementById('modal-save').click();
   }
+});
+
+/* ── hints toggle (double-click whitespace to hide) ── */
+let hintsHidden = false;
+function toggleHints() {
+  hintsHidden = !hintsHidden;
+  document.querySelector('.instructions').style.display = hintsHidden ? 'none' : '';
+}
+document.body.addEventListener('dblclick', e => {
+  if (e.target === document.body) toggleHints();
+});
+
+/* ── hint button click handlers ── */
+document.getElementById('hint-ab').addEventListener('click', () => {
+  openModal({ mode: 'bookmark', item: {}, section: sections[0]?.id, index: -1 });
+});
+document.getElementById('hint-ae').addEventListener('click', () => {
+  openModal({ mode: 'engine', item: {}, section: null, index: -1 });
+});
+document.getElementById('hint-as').addEventListener('click', () => {
+  openModal({ mode: 'section', item: {}, section: null, index: -1 });
 });
 
 /* ── chord navigation ── */
